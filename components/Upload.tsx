@@ -22,6 +22,10 @@ const Upload = ({ onComplete }: UploadComponentProps) => {
     setProgress(0);
 
     const reader = new FileReader();
+    reader.onerror = () => {
+      setFile(null);
+      setProgress(0);
+    };
     reader.onload = () => {
       if (typeof reader.result !== "string") return;
 
@@ -48,7 +52,12 @@ const Upload = ({ onComplete }: UploadComponentProps) => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
-    processFile(event.dataTransfer.files[0]);
+
+    const droppedFile = event.dataTransfer.files[0];
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (droppedFile && allowedTypes.includes(droppedFile.type)) {
+      processFile(droppedFile);
+    }
   };
 
   return (
